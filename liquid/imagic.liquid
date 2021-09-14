@@ -1,0 +1,271 @@
+<!-- test -->
+
+{% assign params = content_for_header | split: "script-shopify.loca.lt\/" | last | split: "\u0026shop" | first | replace: "\u0026", "&" %}
+
+<script> 
+
+const adjustments = parseQuery(`{{params}}`)
+      
+function parseQuery(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
+}
+console.log("adj",adjustments)
+
+</script>
+
+<style>
+.container {
+  width: 50%;
+  display: flex;
+  float: left;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+  margin: auto;
+}
+.cardProduct {
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  width: 35rem;
+  min-height: 25rem;
+  border-radius: 30px;
+  padding: 0rem 5rem;
+  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2), 0px 0px 50px rgba(0, 0, 0, 0.2);
+}
+.imgContainer {
+  min-height: 25rem;
+  height: 35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-transition: all 0.75s ease-in-out;
+  -moz-transition: all 0.75s ease-in-out;
+  -ms-transition: all 0.75s ease-in-out;
+  -o-transition: all 0.75s ease-in-out;
+  transition: all 0.75s ease-in-out;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+.imgContainer img {
+  width: 20rem;
+  z-index: 2;
+  -webkit-transition: all 0.75s ease-in-out;
+  -moz-transition: all 0.75s ease-in-out;
+  -ms-transition: all 0.75s ease-in-out;
+  -o-transition: all 0.75s ease-in-out;
+  transition: all 0.75s ease-in-out;
+}
+.circle {
+  width: 15rem;
+  height: 15rem;
+  background: linear-gradient(
+    to right,
+    rgba(245, 70, 66, 0.75),
+    rgba(8, 83, 156, 0.75)
+  );
+  position: absolute;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+@media (max-width: 800px) {
+  .container {
+    width: 100%;
+    padding-left: 22px;
+    margin-bottom: 30px;
+  }
+  .cardProduct{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+</style>
+<script src="https://imagic.netlify.app/api/imagic"></script>
+
+<script>
+function applyEffect(){
+  createHtml(adjustments.themeStoreId)
+  Effect(adjustments.intensity, adjustments.imageDistance, adjustments.imageAngle, JSON.parse(adjustments.isBackground), `#${adjustments.color1}`, `#${adjustments.color2}`, JSON.parse(adjustments.isMobileEnabled))
+}
+  
+document.addEventListener('DOMContentLoaded', () => {
+  const productId = `{{product.id}}`
+  const isSpecific = JSON.parse(adjustments.isSpecific)
+  if(isSpecific) {
+  	if(adjustments.productsPickedId.includes(productId)){
+      applyEffect()
+    }
+  } else {
+	applyEffect()  
+  }                       
+})
+  
+// Creates html in js -------------------------------
+function createHtml(themeStoreId){
+  const themesId = {debut: "796", express: "885", dawn: "887"}
+  let currentSlider, parent
+  const container = document.createElement("div")
+  const cardProduct = document.createElement("div")
+  const imgContainer = document.createElement("div")
+  const circle = document.createElement("div")
+  const img = document.createElement("img")
+
+  switch (themeStoreId) {
+  case themesId.debut:
+    currentSlider = document.querySelector("#ProductSection-product-template > div > div.grid__item.product-single__media-group.medium-up--one-half")
+  	parent = document.querySelector("#ProductSection-product-template > div")
+//     img.style.maxWidth = `${window.innerWidth-200}px`
+    break;
+  case themesId.express:
+    currentSlider = document.querySelector("#shopify-section-product > div.product.product--template > div.product__wrapper > div")
+  	parent = document.querySelector("#shopify-section-product > div.product.product--template > div.product__wrapper")
+    container.style.display = "inline-block"
+    cardProduct.style.width = "40rem"
+    img.style.width = "auto"
+    if (window.innerWidth < 800){
+      cardProduct.style.width = "auto"
+      cardProduct.style.padding = "auto"
+      container.style.paddingLeft = "0"
+      img.style.maxWidth = "70%"
+    }
+    break;
+  case themesId.dawn:
+    parent = document.querySelector("#shopify-section-template--15075994370228__main > section > div > div.grid__item.product__media-wrapper")
+    currentSlider = document.querySelector("#shopify-section-template--15075994370228__main > section > div > div.grid__item.product__media-wrapper > slider-component")
+    container.style.width = "100%"
+    circle.style.display = "unset"
+    img.style.maxWidth = "40rem"
+    img.style.width = "100%"
+    img.style.minWidth = "20rem"
+    cardProduct.style.width = "75%"
+    cardProduct.style.maxWidth = "60rem"
+    cardProduct.style.height = "70%"
+    cardProduct.style.maxHeight = "50rem"
+    imgContainer.style.height = "45rem"
+    circle.style.width = "22rem"
+  	circle.style.height = "22rem"
+    if (window.innerWidth < 800){
+      container.style.paddingLeft = "0"
+      container.style.marginTop = "30px"
+      img.style.maxWidth = "28rem"
+      cardProduct.style.width = "95%"
+      circle.style.width = "15rem"
+  	  circle.style.height = "15rem"
+    }
+}
+  
+
+  container.id = "effect-container-id"
+  cardProduct.id = "cardProduct-id"
+  imgContainer.id = "imgContainer-id"
+  circle.id = "circle-id"
+  img.id = "img-id"
+
+  container.classList.add("container")
+  cardProduct.classList.add("cardProduct")
+  imgContainer.classList.add("imgContainer")
+  circle.classList.add("circle")
+  img.src = "{{ product.featured_media | img_url: '1024x1024' }}"
+
+  parent.replaceChild(container, currentSlider)
+//   parent.append(container)
+
+  container.append(cardProduct)
+  cardProduct.append(imgContainer)
+  imgContainer.append(circle, img)
+}
+
+//----------------------------------------------------
+
+function Effect(instensity=20,imageDistance=100,imageAngle=10,isBackground=true,color1="#f54642bf",color2="#08539cbf",isMobileEnabled=true){
+  
+  if(window.innerWidth<600) imageDistance = imageDistance / 2
+
+  //Items
+  const cardProduct = document.getElementById("cardProduct-id")
+  const container = document.getElementById("effect-container-id")
+  const imgContainer = document.getElementById("imgContainer-id") 
+  const circle = document.getElementById("circle-id")
+  const img = document.getElementById("img-id") 
+  
+  // consts to calculate cardProduct center
+  const cardProductDistanceToTop = cardProduct.getBoundingClientRect().top
+  const scrollPassed = window.pageYOffset
+  const cardProductHeight = cardProduct.getBoundingClientRect().height
+  const cardProductWidth = cardProduct.getBoundingClientRect().width
+  const cardProductDistanceToRight = cardProduct.getBoundingClientRect().left
+
+  // Caculates cardProduct Center
+  const cardProductCenterY = cardProductDistanceToTop + scrollPassed + cardProductHeight / 2
+  const cardProductCenterX = cardProductDistanceToRight + cardProductWidth / 2
+  
+  function animateDesktop(e){
+    let xAxis = -(cardProductCenterX - e.pageX) / 500 * instensity;
+    let yAxis = (cardProductCenterY - e.pageY) / 500 * instensity;
+    cardProduct.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+  }
+  
+  function animateMobile(yAxis){
+    cardProduct.style.transform = `rotateX(${(yAxis-90)/100*instensity}deg)`;
+  }
+  
+  function animateOut(){
+    cardProduct.style.transition = "all 0.5s ease";
+    cardProduct.style.transform = `rotateY(0deg) rotateX(0deg)`;
+    img.style.transform = "translateZ(0px) rotateZ(0deg)";
+  }
+  
+  function animateImagePopout(){
+    img.style.transform = `translateZ(${imageDistance}px) rotateZ(${imageAngle}deg)`
+  }
+  
+  //Moving Animation Event
+  container.addEventListener("mousemove", (e) => {
+    animateDesktop(e)
+  });
+  
+  //Animate In
+  container.addEventListener("mouseenter", (e) => {
+    cardProduct.style.transition = "none";
+    animateImagePopout()
+  });
+  
+
+  container.addEventListener("mouseleave", (e) => {
+	animateOut()
+  })
+
+  //toggle background
+  if (isBackground){
+    circle.style.display = "unset"
+  } else {
+    circle.style.display = "none"
+  }
+  
+  //Change circle color
+  circle.style.background = `linear-gradient( to right,${color1},${color2})`
+  
+  if(isMobileEnabled && window.innerWidth<800){
+    window.addEventListener('deviceorientation', function(e) {
+  //  let xAxis = (e.gamma) 
+      cardProduct.style.transition = "all 0.2s ease";
+      let yAxis = (e.beta) 
+      if(yAxis<0) {
+        yAxis=90
+        animateOut()
+      } else {
+        animateImagePopout()
+      }
+      animateMobile(yAxis)
+    })
+  } 
+}
+</script>
